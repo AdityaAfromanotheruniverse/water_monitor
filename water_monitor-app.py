@@ -306,10 +306,10 @@ function animate() {
     ctx.strokeStyle = testColor;
     ctx.globalAlpha = 0.5 * (1 - (Math.sin(pulse) + 1) / 2);
     ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(820, 275, 14 + 10 * ((Math.sin(pulse) + 1) / 2), 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(860, 228, 7 + 6 * ((Math.sin(pulse) + 1) / 2), 0, Math.PI * 2); ctx.stroke();
     ctx.globalAlpha = 1;
     ctx.fillStyle = testColor;
-    ctx.beginPath(); ctx.arc(820, 275, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(860, 228, 4, 0, Math.PI * 2); ctx.fill();
 
     ctx.fillStyle = '#777';
     ctx.font = '11px sans-serif';
