@@ -1,6 +1,5 @@
 import streamlit as st
 import json
-import pandas as pd
 
 st.set_page_config(layout="wide")
 
@@ -16,205 +15,202 @@ st.write("Water flows from the plant to the city and to a tester. The tester lin
 # Pathogens: E. coli / total coliform must be absent (0) in a 100 mL sample.
 # ---------------------------------------------------------------------------
 RAW_PARAMS = [
-    # key,        label,                 unit,      category,        acc,    perm,   min,  max,    step,  default, dec
-    ("ph",        "pH",                  "",        "Physical",      None,   None,   4.0,  11.0,   0.1,   7.2,     1),
-    ("turb",      "Turbidity",           "NTU",     "Physical",      1.0,    5.0,    0.0,  10.0,   0.1,   0.3,     1),
-    ("tds",       "Total Dissolved Solids", "mg/L", "Physical",      500.0,  2000.0, 0.0,  3000.0, 10.0,  200.0,   0),
-    ("pb",        "Lead (Pb)",           "mg/L",    "Metals",        0.01,   0.01,   0.0,  0.03,   0.001, 0.003,   3),
-    ("as",        "Arsenic (As)",        "mg/L",    "Metals",        0.01,   0.05,   0.0,  0.15,   0.001, 0.003,   3),
-    ("hg",        "Mercury (Hg)",        "mg/L",    "Metals",        0.001,  0.001,  0.0,  0.003,  0.0001, 0.0003, 4),
-    ("cd",        "Cadmium (Cd)",        "mg/L",    "Metals",        0.003,  0.003,  0.0,  0.009,  0.0001, 0.001,  4),
-    ("cr",        "Chromium (Cr)",       "mg/L",    "Metals",        0.05,   0.05,   0.0,  0.15,   0.001, 0.01,    3),
-    ("ni",        "Nickel (Ni)",         "mg/L",    "Metals",        0.02,   0.02,   0.0,  0.06,   0.001, 0.005,   3),
-    ("fe",        "Iron (Fe)",           "mg/L",    "Metals",        1.0,    1.0,    0.0,  3.0,    0.01,  0.2,     2),
-    ("cu",        "Copper (Cu)",         "mg/L",    "Metals",        0.05,   1.5,    0.0,  2.5,    0.01,  0.01,    2),
-    ("mn",        "Manganese (Mn)",      "mg/L",    "Metals",        0.1,    0.3,    0.0,  0.6,    0.01,  0.02,    2),
-    ("zn",        "Zinc (Zn)",           "mg/L",    "Metals",        5.0,    15.0,   0.0,  20.0,   0.1,   1.0,     1),
-    ("al",        "Aluminium (Al)",      "mg/L",    "Metals",        0.03,   0.2,    0.0,  0.4,    0.001, 0.01,    3),
-    ("f",         "Fluoride (F)",        "mg/L",    "Chemicals",     1.0,    1.5,    0.0,  3.0,    0.01,  0.4,     2),
-    ("no3",       "Nitrate (NO3)",       "mg/L",    "Chemicals",     45.0,   45.0,   0.0,  100.0,  1.0,   15.0,    0),
-    ("cn",        "Cyanide (CN)",        "mg/L",    "Chemicals",     0.05,   0.05,   0.0,  0.15,   0.001, 0.01,    3),
-    ("ecoli",     "E. coli",             "CFU/100mL", "Pathogens",   0,      0,      0,    20,     1,     0,       0),
-    ("coliform",  "Total Coliform",      "CFU/100mL", "Pathogens",   0,      0,      0,    20,     1,     0,       0),
+    ("ph",       "pH",                     "",          "Physical",  None,  None,   4.0, 11.0,   0.1,    7.2,    1),
+    ("turb",     "Turbidity",              "NTU",       "Physical",  1.0,   5.0,    0.0, 10.0,   0.1,    0.3,    1),
+    ("tds",      "Total Dissolved Solids", "mg/L",      "Physical",  500,   2000,   0,   3000,   10,     200,    0),
+    ("pb",       "Lead (Pb)",              "mg/L",      "Metals",    0.01,  0.01,   0.0, 0.03,   0.001,  0.003,  3),
+    ("as",       "Arsenic (As)",           "mg/L",      "Metals",    0.01,  0.05,   0.0, 0.15,   0.001,  0.003,  3),
+    ("hg",       "Mercury (Hg)",           "mg/L",      "Metals",    0.001, 0.001,  0.0, 0.003,  0.0001, 0.0003, 4),
+    ("cd",       "Cadmium (Cd)",           "mg/L",      "Metals",    0.003, 0.003,  0.0, 0.009,  0.0001, 0.001,  4),
+    ("cr",       "Chromium (Cr)",          "mg/L",      "Metals",    0.05,  0.05,   0.0, 0.15,   0.001,  0.01,   3),
+    ("ni",       "Nickel (Ni)",            "mg/L",      "Metals",    0.02,  0.02,   0.0, 0.06,   0.001,  0.005,  3),
+    ("fe",       "Iron (Fe)",              "mg/L",      "Metals",    1.0,   1.0,    0.0, 3.0,    0.01,   0.2,    2),
+    ("cu",       "Copper (Cu)",            "mg/L",      "Metals",    0.05,  1.5,    0.0, 2.5,    0.01,   0.01,   2),
+    ("mn",       "Manganese (Mn)",         "mg/L",      "Metals",    0.1,   0.3,    0.0, 0.6,    0.01,   0.02,   2),
+    ("zn",       "Zinc (Zn)",              "mg/L",      "Metals",    5.0,   15.0,   0.0, 20.0,   0.1,    1.0,    1),
+    ("al",       "Aluminium (Al)",         "mg/L",      "Metals",    0.03,  0.2,    0.0, 0.4,    0.001,  0.01,   3),
+    ("f",        "Fluoride (F)",           "mg/L",      "Chemicals", 1.0,   1.5,    0.0, 3.0,    0.01,   0.4,    2),
+    ("no3",      "Nitrate (NO3)",          "mg/L",      "Chemicals", 45,    45,     0,   100,    1,      15,     0),
+    ("cn",       "Cyanide (CN)",           "mg/L",      "Chemicals", 0.05,  0.05,   0.0, 0.15,   0.001,  0.01,   3),
+    ("ecoli",    "E. coli",                "CFU/100mL", "Pathogens", 0,     0,      0,   20,     1,      0,      0),
+    ("coliform", "Total Coliform",         "CFU/100mL", "Pathogens", 0,     0,      0,   20,     1,      0,      0),
 ]
 
-PARAMS = []
-for (key, label, unit, cat, acc, perm, vmin, vmax, step, default, dec) in RAW_PARAMS:
-    PARAMS.append(dict(key=key, label=label, unit=unit, cat=cat, acc=acc, perm=perm,
-                       vmin=vmin, vmax=vmax, step=step, default=default, dec=dec,
-                       is_range=(key == "ph")))
-
-CATEGORY_ORDER = ["Physical", "Metals", "Chemicals", "Pathogens"]
-CATEGORY_TITLE = {
-    "Physical": "🧪 Physical / General",
-    "Metals": "🔩 Heavy & Other Metals",
-    "Chemicals": "☣️ Hazardous Chemicals",
-    "Pathogens": "🦠 Pathogens",
-}
-
-
-def reset_all():
-    for p in PARAMS:
-        st.session_state[p["key"]] = p["default"]
-
+PARAMS = [
+    dict(key=k, label=l, unit=u, cat=c, acc=a, perm=p, vmin=lo, vmax=hi,
+         step=s, default=d, dec=dec, isRange=(k == "ph"))
+    for (k, l, u, c, a, p, lo, hi, s, d, dec) in RAW_PARAMS
+]
 
 # ---------------------------------------------------------------------------
-# Sidebar
-# ---------------------------------------------------------------------------
-with st.sidebar:
-    st.header("🎛️ Water Composition")
-    mode = st.radio(
-        "Safety limit used to close the city valve",
-        ["Acceptable limit (strict)", "Permissible limit (no alternate source)"],
-        help="IS 10500:2012 lists an Acceptable limit and a looser Permissible limit that applies only when "
-             "no better water source is available. Strict is the safer default.",
-    )
-    speed = st.slider("⚡ Flow animation speed", 0.5, 3.0, 1.5, 0.25)
-    st.button("♻️ Reset all to safe values", on_click=reset_all, type="primary")
-
-    values = {}
-    for cat in CATEGORY_ORDER:
-        with st.expander(CATEGORY_TITLE[cat], expanded=(cat in ("Metals", "Pathogens"))):
-            for p in [x for x in PARAMS if x["cat"] == cat]:
-                unit = f" ({p['unit']})" if p["unit"] else ""
-                if p["dec"] == 0 and p["key"] in ("ecoli", "coliform", "no3", "tds"):
-                    # integer-valued sliders
-                    values[p["key"]] = st.slider(
-                        p["label"] + unit, int(p["vmin"]), int(p["vmax"]),
-                        int(p["default"]), int(p["step"]), key=p["key"])
-                else:
-                    values[p["key"]] = st.slider(
-                        p["label"] + unit, float(p["vmin"]), float(p["vmax"]),
-                        float(p["default"]), float(p["step"]),
-                        format=f"%.{p['dec']}f", key=p["key"])
-
-strict = mode.startswith("Acceptable")
-
-# ---------------------------------------------------------------------------
-# Evaluate every parameter against the standard
-# ---------------------------------------------------------------------------
-payload = []
-table_rows = []
-violations = []
-for p in PARAMS:
-    v = round(float(values[p["key"]]), p["dec"])
-    if p["is_range"]:
-        lo, hi = 6.5, 8.5  # IS 10500:2012: no relaxation for pH
-        violated = (v < lo) or (v > hi)
-        limit_txt = f"{lo} – {hi}"
-    else:
-        limit = p["acc"] if strict else p["perm"]
-        violated = v > limit
-        if p["cat"] == "Pathogens":
-            limit_txt = "Absent (0)"
-        else:
-            limit_txt = f"≤ {limit:g}"
-    if violated:
-        violations.append(p["label"])
-    payload.append(dict(
-        label=p["label"], unit=p["unit"], cat=p["cat"], dec=p["dec"],
-        value=v, limit=limit_txt, violated=bool(violated)))
-    table_rows.append({"Parameter": p["label"], "Value": v, "Unit": p["unit"],
-                       "Limit": limit_txt, "Status": "🚨 UNSAFE" if violated else "✅ OK"})
-
-city_open = len(violations) == 0
-
-# Remember the previous valve state so the valve animates from where it was
-prev_open = st.session_state.get("prev_city_open", True)
-st.session_state.prev_city_open = city_open
-
-if city_open:
-    st.success(f"✅ All {len(PARAMS)} parameters within limits — city valve OPEN.")
-else:
-    st.error("🚨 UNFIT FOR DRINKING — city valve CLOSED. Violations: " + ", ".join(violations))
-
-# ---------------------------------------------------------------------------
-# Canvas animation + live readings panel
+# Everything (sliders, valve logic, animation, readings) lives inside ONE HTML
+# component. Moving a slider never triggers a Streamlit rerun, so the frame
+# never reloads/flashes and the valve animates smoothly.
 # ---------------------------------------------------------------------------
 html_template = """
-<div style="background:#111; padding:20px; border-radius:12px; font-family:sans-serif; color:white;">
+<style>
+    * { box-sizing: border-box; }
+    .wrap { background:#111; padding:20px; border-radius:12px; font-family:sans-serif; color:white; }
+    .controls-top { display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:center;
+                    margin-bottom:12px; font-size:13px; color:#ccc; }
+    .controls-top select, .controls-top button {
+        background:#1a1a1a; color:#eee; border:1px solid #444; border-radius:6px; padding:6px 10px; font-size:13px; cursor:pointer; }
+    .controls-top button:hover { border-color:#00c0f2; }
+    .panel { margin-top:16px; max-height:520px; overflow-y:auto; border:1px solid #333; border-radius:8px; padding:12px; background:#151515; }
+    .cat-title { grid-column:1 / -1; color:#00c0f2; font-weight:bold; font-size:14px; margin:10px 0 2px; border-bottom:1px solid #2a2a2a; padding-bottom:4px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:10px 22px; }
+    .row { padding:6px 4px; border-radius:6px; transition:background 0.4s; }
+    .row.bad { background:rgba(255,75,75,0.10); }
+    .top { display:flex; justify-content:space-between; font-size:13px; margin-bottom:2px; }
+    .name { color:#ddd; }
+    .val { font-family:monospace; transition:color 0.3s; }
+    .row input[type=range] { width:100%; accent-color:#00c0f2; margin:2px 0; }
+    .meta { display:flex; justify-content:space-between; font-size:11px; color:#888; margin-bottom:3px; }
+    .bar { height:5px; background:#262626; border-radius:3px; overflow:hidden; }
+    .fill { height:100%; width:0%; border-radius:3px; transition:width 0.25s, background 0.3s; }
+    .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#28a745; margin-right:6px; animation:blink 1.2s infinite; }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.25; } }
+</style>
+
+<div class="wrap">
     <div id="liveLine" style="text-align:center; font-size:14px; margin-bottom:4px; color:#aaa;"></div>
-    <div id="statusLine" style="text-align:center; font-size:16px; font-weight:bold; margin-bottom:10px; height:22px;"></div>
+    <div id="statusLine" style="text-align:center; font-size:16px; font-weight:bold; margin-bottom:10px; height:22px; transition:color 0.4s;"></div>
+
     <canvas id="plant" width="900" height="340" style="display:block; margin:0 auto; max-width:100%; background:#1a1a1a; border-radius:8px; border:1px solid #333;"></canvas>
 
-    <div style="margin-top:16px; max-height:340px; overflow-y:auto; border-radius:8px; border:1px solid #333;">
-        <table style="width:100%; border-collapse:collapse; font-size:13px; color:#ddd;">
-            <thead>
-                <tr style="position:sticky; top:0; background:#1a1a1a;">
-                    <th style="padding:8px; text-align:left; color:#00c0f2;">Parameter</th>
-                    <th style="padding:8px; text-align:left; color:#00c0f2;">Group</th>
-                    <th style="padding:8px; text-align:left; color:#00c0f2;">Reading</th>
-                    <th style="padding:8px; text-align:left; color:#00c0f2;">IS 10500 Limit</th>
-                    <th style="padding:8px; text-align:left;">Status</th>
-                </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-        </table>
+    <div class="controls-top" style="margin-top:14px;">
+        <label>Limit used:
+            <select id="modeSel">
+                <option value="acc">Acceptable limit (strict)</option>
+                <option value="perm">Permissible limit (no alternate source)</option>
+            </select>
+        </label>
+        <label>⚡ Flow speed: <input id="speedSl" type="range" min="0.5" max="3" step="0.25" value="1.5" style="vertical-align:middle; accent-color:#00c0f2;"></label>
+        <button id="resetBtn">♻️ Reset all to safe values</button>
     </div>
+
+    <div class="panel"><div class="grid" id="grid"></div></div>
 </div>
 
 <script>
 const P = __PARAMS__;
-const cityOpen = __CITY_OPEN__;
-const prevOpen = __PREV_OPEN__;
-const speed = __SPEED__;
-
 const canvas = document.getElementById('plant');
 const ctx = canvas.getContext('2d');
+const CATS = ['Physical', 'Metals', 'Chemicals', 'Pathogens'];
+const CAT_TITLE = {Physical:'🧪 Physical / General', Metals:'🔩 Heavy & Other Metals', Chemicals:'☣️ Hazardous Chemicals', Pathogens:'🦠 Pathogens'};
 
-// ---------- Layout ----------
+const vals = {};
+P.forEach(function(p) { vals[p.key] = p.default; });
+let mode = 'acc';
+let speed = 1.5;
+let cityOpen = true;
+let openness = 1;          // 0 = closed, 1 = open, eased toward target every frame
+let badList = [];
+
+// ---------- Build controls ----------
+const grid = document.getElementById('grid');
+let gh = '';
+CATS.forEach(function(cat) {
+    gh += '<div class="cat-title">' + CAT_TITLE[cat] + '</div>';
+    P.filter(function(p) { return p.cat === cat; }).forEach(function(p) {
+        gh += '<div class="row" id="row-' + p.key + '">' +
+            '<div class="top"><span class="name">' + p.label + (p.unit ? ' <span style="color:#666;">(' + p.unit + ')</span>' : '') + '</span>' +
+            '<span class="val" id="val-' + p.key + '"></span></div>' +
+            '<input type="range" id="sl-' + p.key + '" min="' + p.vmin + '" max="' + p.vmax + '" step="' + p.step + '" value="' + p.default + '">' +
+            '<div class="meta"><span id="lim-' + p.key + '"></span><span id="st-' + p.key + '"></span></div>' +
+            '<div class="bar"><div class="fill" id="bar-' + p.key + '"></div></div></div>';
+    });
+});
+grid.innerHTML = gh;
+
+function limitOf(p) { return mode === 'acc' ? p.acc : p.perm; }
+
+function isViolated(p, v) {
+    if (p.isRange) return v < 6.5 || v > 8.5;
+    return v > limitOf(p);
+}
+
+// ---------- Evaluate EVERY parameter together, instantly ----------
+function evaluate() {
+    badList = [];
+    P.forEach(function(p) {
+        const v = vals[p.key];
+        const bad = isViolated(p, v);
+        if (bad) badList.push(p.label);
+
+        const col = bad ? '#ff4b4b' : '#28a745';
+        const valEl = document.getElementById('val-' + p.key);
+        valEl.innerText = v.toFixed(p.dec) + (p.unit ? ' ' + p.unit : '');
+        valEl.style.color = col;
+
+        let limTxt;
+        if (p.isRange) limTxt = 'Limit: 6.5 – 8.5';
+        else if (p.cat === 'Pathogens') limTxt = 'Limit: absent (0)';
+        else limTxt = 'Limit: ≤ ' + limitOf(p);
+        document.getElementById('lim-' + p.key).innerText = limTxt;
+
+        const stEl = document.getElementById('st-' + p.key);
+        stEl.innerText = bad ? '🚨 UNSAFE' : '✅ OK';
+        stEl.style.color = col;
+
+        // bar = how close the reading is to its limit
+        let ratio;
+        if (p.isRange) ratio = Math.abs(v - 7.5) / 1.0;
+        else if (limitOf(p) === 0) ratio = v > 0 ? 1 : 0;
+        else ratio = v / limitOf(p);
+        const fill = document.getElementById('bar-' + p.key);
+        fill.style.width = Math.min(ratio, 1) * 100 + '%';
+        fill.style.background = bad ? '#ff4b4b' : (ratio > 0.7 ? '#f5a623' : '#28a745');
+
+        document.getElementById('row-' + p.key).className = bad ? 'row bad' : 'row';
+    });
+
+    cityOpen = (badList.length === 0);
+    const st = document.getElementById('statusLine');
+    if (cityOpen) {
+        st.innerText = '✅ Water is safe — city valve OPEN';
+        st.style.color = '#28a745';
+    } else {
+        st.innerText = '🚨 UNSAFE: ' + badList.join(', ') + ' — city valve CLOSED';
+        st.style.color = '#ff4b4b';
+    }
+}
+
+// ---------- Wire up controls (no page reloads, ever) ----------
+P.forEach(function(p) {
+    document.getElementById('sl-' + p.key).addEventListener('input', function(e) {
+        vals[p.key] = parseFloat(e.target.value);
+        evaluate();
+    });
+});
+document.getElementById('modeSel').addEventListener('change', function(e) { mode = e.target.value; evaluate(); });
+document.getElementById('speedSl').addEventListener('input', function(e) { speed = parseFloat(e.target.value); });
+document.getElementById('resetBtn').addEventListener('click', function() {
+    P.forEach(function(p) {
+        vals[p.key] = p.default;
+        document.getElementById('sl-' + p.key).value = p.default;
+    });
+    evaluate();
+});
+
+// ---------- Live monitor: all sensors report together ----------
+let sample = 0;
+function liveTick() {
+    sample++;
+    const t = new Date().toLocaleTimeString();
+    document.getElementById('liveLine').innerHTML =
+        '<span class="dot"></span>LIVE MONITORING — all ' + P.length + ' sensors reporting simultaneously — sample #' + sample + ' — ' + t;
+}
+liveTick();
+setInterval(liveTick, 1000);
+
+// ---------- Canvas helpers ----------
 const trunk    = [[170,170],[300,170]];
 const cityPre  = [[300,170],[300,80],[520,80]];
 const cityPost = [[520,80],[760,80]];
 const testPipe = [[300,170],[300,260],[760,260]];
+let offTrunk = 0, offPre = 0, offPost = 0, offTest = 0, pulse = 0;
 
-let openness = prevOpen ? 1 : 0;           // 0 = closed, 1 = open (animates toward target)
-const target = cityOpen ? 1 : 0;
-let offTrunk = 0, offPre = 0, offPost = 0, offTest = 0;
-let pulse = 0;
-
-// ---------- Live readings table ----------
-const tbody = document.getElementById('tbody');
-let html = '';
-P.forEach(function(p, i) {
-    const col = p.violated ? '#ff4b4b' : '#28a745';
-    html += '<tr id="r' + i + '" style="border-bottom:1px solid #222;">' +
-        '<td style="padding:8px;">' + p.label + '</td>' +
-        '<td style="padding:8px; color:#777;">' + p.cat + '</td>' +
-        '<td style="padding:8px; color:' + col + ';">' + p.value.toFixed(p.dec) + ' ' + p.unit + '</td>' +
-        '<td style="padding:8px; color:#aaa;">' + p.limit + '</td>' +
-        '<td style="padding:8px; color:' + col + '; font-weight:bold;">' + (p.violated ? '🚨 UNSAFE' : '✅ OK') + '</td></tr>';
-});
-tbody.innerHTML = html;
-
-// ---------- Status text ----------
-const bad = P.filter(function(p) { return p.violated; }).map(function(p) { return p.label; });
-const st = document.getElementById('statusLine');
-if (cityOpen) {
-    st.innerText = '✅ Water is safe — city valve OPEN';
-    st.style.color = '#28a745';
-} else {
-    st.innerText = '🚨 UNSAFE: ' + bad.join(', ') + ' — city valve CLOSED';
-    st.style.color = '#ff4b4b';
-}
-
-// ---------- Continuous monitoring ticker (scans each sensor in turn) ----------
-let sample = 0, scanIdx = 0;
-function tick() {
-    const prev = document.getElementById('r' + scanIdx);
-    if (prev) prev.style.background = '';
-    scanIdx = (scanIdx + 1) % P.length;
-    sample++;
-    const row = document.getElementById('r' + scanIdx);
-    if (row) row.style.background = '#1c2733';
-    document.getElementById('liveLine').innerHTML =
-        '<span style="color:#ff4b4b;">●</span> LIVE MONITORING — sample #' + sample +
-        ' — scanning <b style="color:#00c0f2;">' + P[scanIdx].label + '</b>';
-}
-tick();
-setInterval(tick, 700);
-
-// ---------- Drawing helpers ----------
 function tracePath(pts) {
     ctx.beginPath();
     ctx.moveTo(pts[0][0], pts[0][1]);
@@ -258,7 +254,7 @@ function drawValve(x, y, open, locked, label) {
     ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate((1 - open) * Math.PI / 2);   // along the pipe when open, across it when closed
+    ctx.rotate((1 - open) * Math.PI / 2);
     ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.stroke();
     ctx.restore();
@@ -269,40 +265,42 @@ function drawValve(x, y, open, locked, label) {
     ctx.textAlign = 'left';
 }
 
+function mix(c1, c2, t) {
+    return 'rgb(' + Math.round(c1[0] + (c2[0] - c1[0]) * t) + ',' +
+                    Math.round(c1[1] + (c2[1] - c1[1]) * t) + ',' +
+                    Math.round(c1[2] + (c2[2] - c1[2]) * t) + ')';
+}
+
 // ---------- Main loop ----------
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     pulse += 0.06;
 
-    // valve moves smoothly toward the commanded state
+    const target = cityOpen ? 1 : 0;
     openness += (target - openness) * 0.06;
-    if (Math.abs(target - openness) < 0.01) openness = target;
+    if (Math.abs(target - openness) < 0.005) openness = target;
 
     const base = 2.2 * speed;
     offTrunk += base;
     offTest  += base;
-    offPre   += base * openness;     // upstream water stops when valve closes
+    offPre   += base * openness;
     offPost  += base * openness;
 
-    // Pipes (trunk and tester ALWAYS flow)
     drawPipe(trunk, 1, offTrunk);
     drawPipe(cityPre, 1, offPre);
-    drawPipe(cityPost, openness, offPost);   // drains when closed
+    drawPipe(cityPost, openness, offPost);
     drawPipe(testPipe, 1, offTest);
 
-    // Valves
     drawValve(520, 80, openness, false, 'CITY VALVE: ' + (openness > 0.5 ? 'OPEN' : 'CLOSED'));
     drawValve(520, 260, 1, true, 'TESTER VALVE: ALWAYS OPEN 🔒');
 
-    // Water plant
     drawBox(20, 120, 150, 100, '🏭 WATER PLANT', 'Source supply', 'Continuous output', '#00c0f2', true);
 
-    // City
-    const cityColor = openness > 0.5 ? '#28a745' : '#ff4b4b';
+    // City box colour eases between red and green with the valve (no sudden colour flips)
+    const cityColor = mix([255, 75, 75], [40, 167, 69], openness);
     drawBox(760, 30, 120, 100, '🏙️ CITY', openness > 0.5 ? 'Receiving water' : 'SUPPLY CUT OFF',
             openness > 0.5 ? 'Flow: ON' : 'Flow: OFF', cityColor, false);
 
-    // Tester (pulsing ring = continuous sampling)
     const testColor = cityOpen ? '#28a745' : '#ff4b4b';
     drawBox(760, 210, 120, 100, '🧪 TESTER', 'Sampling 24x7', cityOpen ? 'Water: SAFE' : 'Water: UNSAFE', testColor, true);
     ctx.strokeStyle = testColor;
@@ -313,7 +311,6 @@ function animate() {
     ctx.fillStyle = testColor;
     ctx.beginPath(); ctx.arc(820, 275, 6, 0, Math.PI * 2); ctx.fill();
 
-    // Pipe labels
     ctx.fillStyle = '#777';
     ctx.font = '11px sans-serif';
     ctx.fillText('Pipeline 1 → City', 330, 66);
@@ -321,20 +318,15 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
+
+evaluate();
 animate();
 </script>
 """
 
-html_canvas = (html_template
-               .replace("__PARAMS__", json.dumps(payload))
-               .replace("__CITY_OPEN__", str(city_open).lower())
-               .replace("__PREV_OPEN__", str(prev_open).lower())
-               .replace("__SPEED__", str(speed)))
+html_canvas = html_template.replace("__PARAMS__", json.dumps(PARAMS))
 
-st.components.v1.html(html_canvas, height=900, scrolling=True)
+st.components.v1.html(html_canvas, height=1080, scrolling=True)
 
 st.caption("Limits: BIS IS 10500:2012 (Indian drinking water specification). Verify against the latest BIS revision "
            "before any real-world use. This is an educational simulation, not a certified monitoring system.")
-
-with st.expander("📋 Raw readings table"):
-    st.dataframe(pd.DataFrame(table_rows).set_index("Parameter"), use_container_width=True)
